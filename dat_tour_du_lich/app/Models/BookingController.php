@@ -142,9 +142,13 @@ class BookingController extends Controller
 
             $this->ensureTourCanBeBooked($tour);
 
-            if ($tour->availableSeats() < (int) $validated['number_of_people']) {
+            $availableSeats = $tour->availableSeats();
+
+            if ($availableSeats < (int) $validated['number_of_people']) {
                 throw ValidationException::withMessages([
-                    'message' => 'Tour nay khong con du cho trong.',
+                    'message' => $availableSeats > 0
+                        ? "Tour nay chi con {$availableSeats} cho trong."
+                        : 'Tour nay da het cho trong.',
                 ]);
             }
 

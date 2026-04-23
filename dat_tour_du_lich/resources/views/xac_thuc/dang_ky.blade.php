@@ -26,11 +26,11 @@
                         @csrf
                         <div>
                             <label for="name" class="form-label fw-semibold">Họ và tên</label>
-                            <input id="name" type="text" class="form-control" name="name" value="{{ old('name') }}" required>
+                            <input id="name" type="text" class="form-control" name="name" value="{{ old('name') }}" autocomplete="name" required>
                         </div>
                         <div>
                             <label for="email" class="form-label fw-semibold">Email</label>
-                            <input id="email" type="email" class="form-control" name="email" value="{{ old('email') }}" required>
+                            <input id="email" type="email" class="form-control" name="email" value="{{ old('email') }}" autocomplete="email" inputmode="email" required>
                         </div>
                         <div>
                             <label for="role" class="form-label fw-semibold">Loại tài khoản</label>
@@ -42,11 +42,11 @@
                         </div>
                         <div>
                             <label for="password" class="form-label fw-semibold">Mật khẩu</label>
-                            <input id="password" type="password" class="form-control" name="password" required>
+                            <input id="password" type="password" class="form-control" name="password" autocomplete="new-password" required>
                         </div>
                         <div>
                             <label for="password_confirmation" class="form-label fw-semibold">Xác nhận mật khẩu</label>
-                            <input id="password_confirmation" type="password" class="form-control" name="password_confirmation" required>
+                            <input id="password_confirmation" type="password" class="form-control" name="password_confirmation" autocomplete="new-password" required>
                         </div>
                         <button type="submit" class="btn btn-brand py-2">Tạo tài khoản</button>
                     </form>

@@ -26,11 +26,11 @@
                         @csrf
                         <div>
                             <label for="email" class="form-label fw-semibold">Email</label>
-                            <input id="email" type="email" class="form-control" name="email" value="{{ old('email') }}" required autofocus>
+                            <input id="email" type="email" class="form-control" name="email" value="{{ old('email') }}" autocomplete="email" inputmode="email" required autofocus>
                         </div>
                         <div>
                             <label for="password" class="form-label fw-semibold">Mật khẩu</label>
-                            <input id="password" type="password" class="form-control" name="password" required>
+                            <input id="password" type="password" class="form-control" name="password" autocomplete="current-password" required>
                         </div>
                         <button type="submit" class="btn btn-brand py-2">Đăng nhập</button>
                     </form>

@@ -18,7 +18,7 @@
 
                         <div>
                             <label for="email" class="form-label fw-semibold">Email</label>
-                            <input id="email" type="email" class="form-control @error('email') is-invalid @enderror" name="email" value="{{ old('email', request('email')) }}" required autofocus>
+                            <input id="email" type="email" class="form-control @error('email') is-invalid @enderror" name="email" value="{{ old('email', request('email')) }}" autocomplete="email" inputmode="email" required autofocus>
                             @error('email')
                                 <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
@@ -26,7 +26,7 @@
 
                         <div>
                             <label for="password" class="form-label fw-semibold">Mật khẩu mới</label>
-                            <input id="password" type="password" class="form-control @error('password') is-invalid @enderror" name="password" required>
+                            <input id="password" type="password" class="form-control @error('password') is-invalid @enderror" name="password" autocomplete="new-password" required>
                             @error('password')
                                 <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
@@ -34,7 +34,7 @@
 
                         <div>
                             <label for="password_confirmation" class="form-label fw-semibold">Xác nhận mật khẩu mới</label>
-                            <input id="password_confirmation" type="password" class="form-control" name="password_confirmation" required>
+                            <input id="password_confirmation" type="password" class="form-control" name="password_confirmation" autocomplete="new-password" required>
                         </div>
 
                         <button type="submit" class="btn btn-brand py-2">Lưu mật khẩu mới</button>

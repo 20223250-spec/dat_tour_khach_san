@@ -3,6 +3,7 @@
 namespace App\Mail;
 
 use Illuminate\Bus\Queueable;
+use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Mail\Mailable;
 use Illuminate\Mail\Mailables\Attachment;
 use Illuminate\Mail\Mailables\Content;
@@ -39,10 +40,23 @@ class BookingConfirmation extends Mailable
     public function content(): Content
     {
         return new Content(
-            view: 'thu_dien_tu.xac_nhan_dat_tour',
+            view: 'emails.booking_confirmation',
             with: [
                 'booking' => $this->booking,
             ],
+        );
+    }
+            subject: 'Booking Confirmation',
+        );
+    }
+
+    /**
+     * Get the message content definition.
+     */
+    public function content(): Content
+    {
+        return new Content(
+            view: 'view.name',
         );
     }
 

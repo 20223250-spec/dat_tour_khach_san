@@ -10,9 +10,10 @@ class AdminAuthorizationTest extends TestCase
 {
     use RefreshDatabase;
 
-    public function test_non_admin_cannot_access_admin_dashboard(): void
+    public function test_verified_non_admin_cannot_access_admin_dashboard(): void
     {
         $user = User::factory()->create([
+            'email_verified_at' => now(),
             'is_admin' => false,
         ]);
 
@@ -21,14 +22,16 @@ class AdminAuthorizationTest extends TestCase
         $response->assertForbidden();
     }
 
-    public function test_admin_can_access_admin_dashboard(): void
+    public function test_verified_admin_can_access_admin_dashboard(): void
     {
         $admin = User::factory()->create([
+            'email_verified_at' => now(),
             'is_admin' => true,
         ]);
 
         $response = $this->actingAs($admin)->get(route('admin.dashboard'));
 
-        $response->assertRedirect(route('home', ['admin_active_tab' => 'tong-quan']) . '#quan-tri-noi-bo');
+        $response->assertOk();
+        $response->assertViewIs('admin.dashboard');
     }
 }

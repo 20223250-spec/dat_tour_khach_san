@@ -14,6 +14,15 @@ class TourFactory extends Factory
 
     public function definition(): array
     {
+        $imageUrls = [
+            'https://picsum.photos/seed/tour-hanoi/1200/800',
+            'https://picsum.photos/seed/tour-danang/1200/800',
+            'https://picsum.photos/seed/tour-phuquoc/1200/800',
+            'https://picsum.photos/seed/tour-sapa/1200/800',
+            'https://picsum.photos/seed/tour-dalat/1200/800',
+            'https://picsum.photos/seed/tour-hoian/1200/800',
+        ];
+
         $destinations = [
             'Hà Nội',
             'Hội An',
@@ -43,6 +52,7 @@ class TourFactory extends Factory
         return [
             'name' => $tourNames[array_rand($tourNames)] . ' tại ' . $destinations[array_rand($destinations)],
             'description' => fake()->realTextBetween(120, 180),
+            'image' => $imageUrls[array_rand($imageUrls)],
             'destination' => $destinations[array_rand($destinations)],
             'price' => fake()->randomFloat(0, 1500000, 8500000),
             'duration_days' => fake()->numberBetween(2, 10),

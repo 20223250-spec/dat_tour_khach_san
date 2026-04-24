@@ -101,47 +101,36 @@ class Notification extends Model
         ]);
     }
 
-    public static function createRoomBookingReceived($userId, $booking)
+    public static function createBookingAutoCancelled($userId, $booking)
     {
         return static::create([
             'user_id' => $userId,
-            'type' => 'room_booking_received',
-            'title' => 'Da nhan yeu cau dat phong',
-            'message' => "He thong da ghi nhan yeu cau dat phong '{$booking->room->title}' cua ban.",
+            'type' => 'booking_auto_cancelled',
+            'title' => 'Đơn đặt tour tự động hủy',
+            'message' => "Đơn đặt tour '{$booking->tour->name}' của bạn đã được tự động hủy do tour đã đến ngày khởi hành.",
             'data' => [
-                'room_booking_id' => $booking->id,
-                'room_id' => $booking->room_id,
-                'room_title' => $booking->room->title,
+                'booking_id' => $booking->id,
+                'tour_id' => $booking->tour_id,
+                'tour_name' => $booking->tour->name,
             ],
         ]);
     }
 
-    public static function createRoomBookingConfirmed($userId, $booking)
+    public static function createDepartureReminder($userId, $booking, int $daysLeft)
     {
-        return static::create([
-            'user_id' => $userId,
-            'type' => 'room_booking_confirmed',
-            'title' => 'Don dat phong da duoc xac nhan',
-            'message' => "Don dat phong '{$booking->room->title}' cua ban da duoc xac nhan.",
-            'data' => [
-                'room_booking_id' => $booking->id,
-                'room_id' => $booking->room_id,
-                'room_title' => $booking->room->title,
-            ],
-        ]);
-    }
+        $dayLabel = $daysLeft === 1 ? 'ngày mai' : "sau {$daysLeft} ngày";
 
-    public static function createRoomBookingCancelled($userId, $booking)
-    {
         return static::create([
             'user_id' => $userId,
-            'type' => 'room_booking_cancelled',
-            'title' => 'Don dat phong da bi huy',
-            'message' => "Don dat phong '{$booking->room->title}' cua ban da bi huy.",
+            'type' => 'departure_reminder',
+            'title' => 'Nhắc lịch khởi hành tour',
+            'message' => "Tour '{$booking->tour->name}' của bạn sẽ khởi hành {$dayLabel}. Vui lòng chuẩn bị trước chuyến đi.",
             'data' => [
-                'room_booking_id' => $booking->id,
-                'room_id' => $booking->room_id,
-                'room_title' => $booking->room->title,
+                'booking_id' => $booking->id,
+                'tour_id' => $booking->tour_id,
+                'tour_name' => $booking->tour->name,
+                'reminder_days' => $daysLeft,
+                'start_date' => $booking->tour->start_date,
             ],
         ]);
     }

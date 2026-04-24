@@ -4,8 +4,10 @@ namespace Tests\Feature;
 
 use App\Models\Tour;
 use App\Models\User;
+use Illuminate\Auth\Notifications\VerifyEmail;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Http\Middleware\ValidateCsrfToken;
+use Illuminate\Support\Facades\Notification;
 use Tests\TestCase;
 
 class AuthFlowTest extends TestCase
@@ -19,28 +21,29 @@ class AuthFlowTest extends TestCase
         $this->withoutMiddleware(ValidateCsrfToken::class);
     }
 
-    public function test_registration_redirects_home_and_logs_user_in(): void
+    public function test_registration_redirects_to_verification_and_sends_email(): void
     {
+        Notification::fake();
+
         $response = $this->post(route('register.store'), [
             'name' => 'Nguyen Van A',
             'email' => 'nguyenvana@example.com',
             'password' => 'password123',
             'password_confirmation' => 'password123',
-            'role' => User::ROLE_CUSTOMER,
         ]);
 
         $user = User::first();
 
-        $response->assertRedirect(route('home'));
+        $response->assertRedirect(route('verification.notice'));
         $this->assertAuthenticatedAs($user);
-        $this->assertNotNull($user->fresh()->email_verified_at);
+        $this->assertNull($user->fresh()->email_verified_at);
+        Notification::assertSentTo($user, VerifyEmail::class);
     }
 
-    public function test_user_can_login_without_email_verification_flow(): void
+    public function test_unverified_user_is_redirected_to_verification_after_login(): void
     {
-        $user = User::factory()->create([
+        $user = User::factory()->unverified()->create([
             'password' => bcrypt('password123'),
-            'email_verified_at' => null,
         ]);
 
         $response = $this->post(route('login.perform'), [
@@ -48,15 +51,17 @@ class AuthFlowTest extends TestCase
             'password' => 'password123',
         ]);
 
-        $response->assertRedirect(route('home'));
+        $response->assertRedirect(route('verification.notice'));
         $this->assertAuthenticatedAs($user);
     }
 
-    public function test_updating_email_does_not_require_reverification(): void
+    public function test_updating_email_requires_reverification(): void
     {
+        Notification::fake();
+
         $user = User::factory()->create([
             'email' => 'old@example.com',
-            'email_verified_at' => null,
+            'email_verified_at' => now(),
         ]);
 
         $response = $this->actingAs($user)->put(route('profile.update'), [
@@ -64,13 +69,14 @@ class AuthFlowTest extends TestCase
             'email' => 'new@example.com',
         ]);
 
-        $response->assertRedirect();
+        $response->assertRedirect(route('verification.notice'));
 
         $user->refresh();
 
         $this->assertSame('Nguyen Van B', $user->name);
         $this->assertSame('new@example.com', $user->email);
-        $this->assertNotNull($user->email_verified_at);
+        $this->assertNull($user->email_verified_at);
+        Notification::assertSentTo($user, VerifyEmail::class);
     }
 
     public function test_guest_can_view_tour_detail_page(): void
@@ -91,9 +97,9 @@ class AuthFlowTest extends TestCase
         $response->assertSee('Hanh trinh Da Lat');
     }
 
-    public function test_authenticated_user_can_logout_normally(): void
+    public function test_unverified_user_can_logout_from_verification_flow(): void
     {
-        $user = User::factory()->create();
+        $user = User::factory()->unverified()->create();
 
         $response = $this->actingAs($user)->post(route('logout'));
 

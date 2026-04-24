@@ -12,7 +12,7 @@ class NotificationController extends Controller
             ->latest()
             ->paginate(20);
 
-        return view('thong_bao.danh_sach', compact('notifications'));
+        return view('notifications.index', compact('notifications'));
     }
 
     public function getUnreadCount()

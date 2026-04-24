@@ -19,23 +19,18 @@ class AuthController extends Controller
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users',
             'password' => 'required|string|min:8',
-            'role' => 'nullable|string|in:' . User::ROLE_CUSTOMER . ',' . User::ROLE_TOUR_OWNER . ',' . User::ROLE_HOTEL_OWNER,
         ]);
-
-        $role = $request->input('role', User::ROLE_CUSTOMER);
 
         $user = User::create([
             'name' => $request->name,
             'email' => $request->email,
             'password' => Hash::make($request->password),
             'email_verified_at' => now(),
-            'is_admin' => false,
-            'role' => $role,
         ]);
 
         if (! method_exists($user, 'createToken')) {
             return response()->json([
-                'message' => 'Tài khoản đã được tạo thành công.',
+                'message' => 'Tài khoản đã được tạo nhưng xác thực API token chưa được cài đặt.',
                 'user' => $user,
             ], 201);
         }
@@ -97,18 +92,13 @@ class AuthController extends Controller
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users',
             'password' => 'required|string|min:8|confirmed',
-            'role' => 'nullable|string|in:' . User::ROLE_CUSTOMER . ',' . User::ROLE_TOUR_OWNER . ',' . User::ROLE_HOTEL_OWNER,
         ]);
-
-        $role = $request->input('role', User::ROLE_CUSTOMER);
 
         $user = User::create([
             'name' => $request->name,
             'email' => $request->email,
             'password' => Hash::make($request->password),
             'email_verified_at' => now(),
-            'is_admin' => false,
-            'role' => $role,
         ]);
 
         Auth::login($user);
@@ -141,7 +131,7 @@ class AuthController extends Controller
 
     public function profile()
     {
-        return view('ho_so');
+        return view('profile');
     }
 
     public function updateProfile(Request $request)
@@ -151,10 +141,22 @@ class AuthController extends Controller
             'email' => 'required|string|email|max:255|unique:users,email,' . $request->user()->id,
         ]);
 
+        if ($request->filled('password')) {
+            $request->validate([
+                'current_password' => ['required', 'current_password'],
+                'password' => ['required', 'string', 'min:8', 'confirmed'],
+            ]);
+        }
+
         $user = $request->user();
         $user->name = $request->name;
         $user->email = $request->email;
         $user->email_verified_at = now();
+
+        if ($request->filled('password')) {
+            $user->password = $request->password;
+        }
+
         $user->save();
 
         return back()->with('success', 'Cập nhật thông tin thành công.');
